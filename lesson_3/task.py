@@ -16,16 +16,28 @@ def get_vacancies():
     for vacancy in vacancies.find({}):
         pprint(vacancy)
 #get_vacancies()
+
+
 #Написать функцию, которая производит поиск и выводит на экран вакансии с заработной платой больше введенной суммы
 def vacancies_salary():
     salary = input('Введите минимальный порог заработной платы для Вас: ')
-    result = vacancies.find({'compensation': {'min': {"$gt": salary}}})
+    result = vacancies.find({'$or':[{'compensation.min': {"$gt": int(salary)}},
+                                    {'compensation.max': {"$gt": int(salary)}}
+                                    ]})
     for vacancy in result:
         pprint(vacancy)
 
-    #pprint(result)
-for vacancy in vacancies.find({}):
-    pprint(vacancy)
-
-
 #vacancies_salary()
+
+#Написать функцию, которая будет добавлять в вашу базу данных только новые вакансии с сайта
+def vacancies_update():
+    for i in task_1.all_hh_links():
+        vacancies.update_one({'link': i['link']}, {'$set': i}, upsert = True)
+    for i in task_1.all_sj_links():
+        vacancies.update_one({'link': i['link']}, {'$set': i}, upsert = True)
+    for vacancy in vacancies.find({}):
+        pprint(vacancy)
+
+vacancies_update()
+
+
